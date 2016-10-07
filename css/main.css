@@ -1,0 +1,112 @@
+* {
+	box-sizing: border-box;
+	font-family: 'Gidugu', sans-serif;
+	font-size: 18px;
+}
+
+body {
+	background-color: #0079BF;
+	white-space: nowrap;
+}
+
+nav img {
+	text-align: center;
+	width: 7%;
+}
+
+.none {
+	display: none;
+}
+
+#section {
+	padding-top: 20px;
+	padding-left: 40px;
+}
+
+#contenedor {
+	display: inline-block;
+}
+
+#box {
+	padding: 10px;
+	background-color: #5E8DA9;
+	display: inline-block;
+	width: 240px;
+	height: 40px;
+	border-radius: 4px;
+	color: #FFF;
+}
+
+#box:hover {
+	background-color: #006BA9;
+}
+
+.button {
+	display: block;
+	margin: 5px 0px;
+	width: 80px;
+	height: 37px;
+	padding: 4px;
+	background-color: #5EB64B;
+	border: none;
+	border-radius: 4px;
+	color: #FFF;
+}
+
+.caja {
+	display: inline-block;
+	padding: 6px;
+	background-color: #E2E4E6;
+	width: 240px;
+	border-radius: 4px;
+}
+
+.write {
+	background-color: #D4D6D8;
+	width: 228px;
+	border-radius: 4px;
+	border: none;
+	height: 32px;
+	margin-bottom: 3px;
+	padding-left: 8px;
+}
+
+.titulo {
+	padding-left: 10px;
+	margin-bottom: 11px;
+	font-size: 16px;
+}
+
+.enlace {
+	padding-left: 10px;
+	font-size: 16px;
+}
+
+.contenedorDerecha {
+	display: inline-block;
+	margin-left: 10px;
+}
+
+.textTarget {
+	border-radius: 5px;
+	width: 228px;
+	height: 80px;
+	margin-top: 8px;
+	padding: 8px;
+}
+
+.position {
+	position: relative;
+	top: 20px;
+}
+
+.divBorder {
+	padding: 5px;
+	background-color: #FFF;
+	border-radius: 4px;
+	margin-bottom: 8px;
+}
+
+.opaco {
+	background-color: lightblue;
+}
