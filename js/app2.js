@@ -21,7 +21,7 @@ window.addEventListener("load", function() {
         e.preventDefault();
 
         var contenedorLista = document.createElement("div");
-        contenedorLista.classList.add("");
+/*        contenedorLista.classList.add("");*/
 
         agregarLista();
         agregarColumna();
