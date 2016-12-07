@@ -1,235 +1,131 @@
-; (function () {
-
-    window.addEventListener("load", cargaPagina);
-
-    var columna = document.getElementById("columna");
-    var contenedor = document.getElementById("contenedor");
-    var span = document.getElementById("span");
-    var formulario = document.getElementById("formulario");
+;(function(){
+    
+    var agregarForm = document.getElementById("agregarForm");
+    var button = document.getElementById("button");
     var input = document.getElementById("input");
-    var boton = document.getElementById("boton");
+    var nuevoForm = document.getElementById("nuevoForm");
+    var contenedor = document.getElementById("contenedor");
+    var contador = 1;
 
+    window.addEventListener("load", cargar);
 
-    function cargaPagina () {
-        span.addEventListener("click", mostrarTextArea);
-        boton.addEventListener("click", agregarLista);
-        boton.addEventListener("click", agregarColumna);
+    function cargar(){
+        agregarForm.addEventListener("click", function(){
+            hideElement(nuevoForm,agregarForm);
+            input.focus();
+            input.value="";
+        });
 
-    }
-
-    function mostrarTextArea () {
-        span.style.display = "none";
-        formulario.style.display = "block";
-        span.parentElement.classList.add("caja");
-        input.focus();
-    }
-
-    function agregarLista () {
-        formulario.style.display = "none";
-
-        var texto = input.value;
-        var lista = document.createElement("div");
-        var enlace = document.createElement("a");
-        var textoEnlace = document.createTextNode("Añadir una tarjeta...");
-
-        lista.innerHTML = texto;
-        lista.classList.add("lista");
-        input.value = "";
-
-        enlace.appendChild(textoEnlace);
-        span.parentElement.insertBefore(lista, span.parentElement.childNodes[0]);
-        span.parentElement.insertBefore(enlace, span.parentElement.childNodes[1]);
-
-        enlace.classList.add("enlace");
-        enlace.setAttribute("href", "#");
-
-        enlace.addEventListener("click", agregarTarjeta(enlace));
-    }
-
-    function agregarColumna() {
-        var contenedorDerecha = document.createElement("div");
-        
-        columna.appendChild(contenedorDerecha);
-        contenedorDerecha.appendChild(span);
-        contenedorDerecha.insertBefore(formulario, contenedorDerecha.childNodes[0]);
-
-        contenedorDerecha.classList.add("contenedorDerecha");
-        span.style.display = "block";
-    }
-
-    function agregarTarjeta (enlace) {
-        enlace.style.display = "none";
-
-        var formTextArea = document.createElement("form");
-        var textArea = document.createElement("textarea");
-        var botonText = document.createElement("button");
-        var textoBoton = document.createTextNode("Añadir");
-
-        enlace.parentElement.appendChild(formTextArea);
-        formTextArea.insertBefore(textArea, formTextArea.childNodes[0]);
-        formTextArea.insertBefore(botonText, formTextArea.childNodes[1]);
-        botonText.appendChild(textoBoton);
-
-        textArea.classList.add("textTarget");
-        textArea.focus();
-        botonText.classList.add("button");
-        botonText.setAttribute("type", "submit");
-
-        botonText.addEventListener("click", function(e) {
+        button.addEventListener("click", function(e){
             e.preventDefault();
+            var contenedorLista = document.createElement("div");
+            contenedorLista.classList.add("d-inlineblock");
+            
+            var remover = nuevoForm.parentNode;
+            contenedor.appendChild(contenedorLista);
+            contenedorLista.appendChild(nuevoForm);
+            contenedorLista.appendChild(agregarForm);
+            remover.remove();
 
-            var textoDiv = textArea.value;
+            var contenedorTarjetas = document.createElement("div");
+            contenedorTarjetas.classList.add("trello-body");
+            contenedor.insertBefore(contenedorTarjetas,contenedor.lastElementChild);
+            contenedorTarjetas.addEventListener("dragleave", dejarTrello);
+            contenedorTarjetas.addEventListener("dragover", arrastrarSobreTrello);
+            contenedorTarjetas.addEventListener("drop", soltarTrello);
+            contenedorTarjetas.addEventListener("dragend", terminaArrastrarTrello); 
+
+            hideElement(nuevoForm,agregarForm);
+
+            crearElementos("div", "nuevaLista", input.value, contenedorTarjetas);
+            crearElementos("div", "agregar", "Añadir una tarjeta", contenedorTarjetas);
+
+            var agregar = document.getElementsByClassName("agregar");
+            agregar[agregar.length-1].addEventListener("click", function(){
+                this.classList.add("d-none");
+                newForm("form", "fomulario", contenedorTarjetas,this);
+            });
+
+        }); 
+    }
+
+    function hideElement(a,b){
+            a.classList.toggle("d-none");
+            b.classList.toggle("d-none");
+    }
+
+    function crearElementos(element, clase, texto, contenedor){
+        var div = document.createElement(element);
+        div.classList.add(clase);
+        div.innerHTML= texto;
+        contenedor.appendChild(div);
+    }
+
+    function newForm(form, clase, contenedor, agregarTarjeta){
+        var form = document.createElement(form);
+        form.classList.add(clase);
+        crearElementos("textarea","textarea","", form);
+        crearElementos("button", "boton", "Añadir", form);
+        contenedor.appendChild(form);
+
+        form.lastElementChild.addEventListener("click", function(e){
+            e.preventDefault();
+            agregarTarjeta.classList.remove("d-none");
+            form.classList.add("d-none");
+
+            var text = form.firstElementChild.value;
+
             var div = document.createElement("div");
+            div.classList.add("text-tarjetas");
             div.draggable = true;
-/*            div.addEventListener("", )
-*/
-            div.innerHTML = textoDiv;
-            enlace.parentElement.appendChild(div);
-            div.classList.add("divBorder");
-            div.parentElement.appendChild(enlace);
+            div.setAttribute("id", "id" + contador);
+            div.innerHTML = text;
+            contador ++;
+            div.addEventListener("dragstart", empiezaArrastrar);
+            div.addEventListener("drop", soltar);
+            div.addEventListener("dragend", terminaArrastrar);          
+            contenedor.insertBefore(div, agregarTarjeta);
 
-            formTextArea.style.display = "none";
-            enlace.style.display = "block";
-        });        
+        });
     }
 
-/*    function cargar () { 
-    var cols = document.getElementsByClassName("column"); 
-    for (var i = 0, l = cols.length; i < l; i++) { 
-        cols[i].addEventListener("dragstart", empiezaArrastrar); 
-        cols[i].addEventListener("dragenter", entraArrastrar); 
-        cols[i].addEventListener("dragleave", dejaArrastrar); 
-        cols[i].addEventListener("dragover", arrastrarSobre); 
-        cols[i].addEventListener("drop", soltar); 
-        cols[i].addEventListener("dragend", terminaArrastrar); 
-    } 
-    }
- 
-    function empiezaArrastrar(e) { 
-        e.dataTransfer.setData("text", this.id); 
-        this.style.opacity = "0.4"; 
-    } 
- 
-    function entraArrastrar(e) { 
-        this.classList.add("over"); 
-    }
- 
-    function dejaArrastrar(e) { 
-        this.classList.remove("over"); 
-    } 
- 
-    function arrastrarSobre(e) { 
-        e.preventDefault(); 
-    } 
- 
-    function soltar(e) { 
-        var idArrastrado = e.dataTransfer.getData("text"); 
-        var elementoArrastrado = document.getElementById(idArrastrado);
-        var temporal = this.innerHTML; 
-        e.target.innerHTML = elementoArrastrado.innerHTML; 
-        elementoArrastrado.innerHTML = temporal; 
-        this.classList.remove("over");
-    } 
- 
-    function terminaArrastrar(e) { 
-        this.style.opacity = null; 
-    } 
-*/
-})();
 
-
-/*window.addEventListener("load", function() {
-
-    var columna = document.getElementById("columna");
-    var contenedor = document.getElementById("contenedor");
-    var span = document.getElementById("span");
-    var formulario = document.getElementById("formulario");
-    var input = document.getElementById("input");
-    var boton = document.getElementById("boton");
-
-    span.addEventListener("click", function() {
-        span.style.display = "none";
-        var formulario = document.getElementById("formulario");
-        formulario.style.display = "block";
-        span.parentElement.classList.add("caja");
-        input.focus();
-    });
+    function empiezaArrastrar(e) {
+        e.dataTransfer.setData("text", this.id);
+        this.classList.add("opacidad");
         
-    boton.addEventListener("click", function(e) {
+    }
+
+    function arrastrarSobreTrello(e) {
         e.preventDefault();
-        agregarLista();
-        agregarColumna();
-        span.parentElement.classList.add("position");
-
-    });
-
-    function agregarLista () {
-        formulario.style.display = "none";
-
-        var texto = input.value;
-        var lista = document.createElement("div");
-        var enlace = document.createElement("a");
-        var textoEnlace = document.createTextNode("Añadir una tarjeta...");
-
-        lista.innerHTML = texto;
-        lista.classList.add("lista");
-        input.value = "";
-
-        enlace.appendChild(textoEnlace);
-        span.parentElement.insertBefore(lista, span.parentElement.childNodes[0]);
-        span.parentElement.insertBefore(enlace, span.parentElement.childNodes[1]);
-
-        enlace.classList.add("enlace");
-        enlace.setAttribute("href", "#");
-
-        enlace.addEventListener("click", function() {
-            agregarTarjeta(enlace);
-        });
+        this.classList.add("bg-blue");
     }
 
-    function agregarColumna() {
-        var contenedorDerecha = document.createElement("div");
-        
-        columna.appendChild(contenedorDerecha);
-        contenedorDerecha.appendChild(span);
-        contenedorDerecha.insertBefore(formulario, contenedorDerecha.childNodes[0]);
-
-        contenedorDerecha.classList.add("contenedorDerecha");
-        span.style.display = "block";
+    function dejarTrello(e) {
+        e.preventDefault();
+        this.classList.remove("bg-blue");
     }
 
-    function agregarTarjeta (enlace) {
-        enlace.style.display = "none";
 
-        var formTextArea = document.createElement("form");
-        var textArea = document.createElement("textarea");
-        var botonText = document.createElement("button");
-        var textoBoton = document.createTextNode("Añadir");
+    function soltar(e) {
+       e.preventDefault();
 
-        enlace.parentElement.appendChild(formTextArea);
-        formTextArea.insertBefore(textArea, formTextArea.childNodes[0]);
-        formTextArea.insertBefore(botonText, formTextArea.childNodes[1]);
-        botonText.appendChild(textoBoton);
-
-        textArea.classList.add("textTarget");
-        textArea.focus();
-        botonText.classList.add("button");
-        botonText.setAttribute("type", "submit");
-
-        botonText.addEventListener("click", function(e) {
-            e.preventDefault();
-
-            var textoDiv = textArea.value;
-            var div = document.createElement("div");
-
-            div.innerHTML = textoDiv;
-            enlace.parentElement.appendChild(div);
-            div.classList.add("divBorder");
-            div.parentElement.appendChild(enlace);
-
-            formTextArea.style.display = "none";
-            enlace.style.display = "block";
-        });
     }
 
-}); */
+    function soltarTrello(e) {
+       e.preventDefault();
+       var arrastrado = e.dataTransfer.getData("text");
+       var elemento = document.getElementById(arrastrado);
+       this.insertBefore(elemento, this.children[1]);
+    }
+
+    function terminaArrastrarTrello(e){
+        this.classList.remove("bg-blue");
+    }
+
+    function terminaArrastrar(e) {
+        this.classList.remove("opacidad");
+        this.classList.add("animated", "wobble");
+    }
+
+}());
